@@ -83,7 +83,7 @@ def train(args, extra_args):
     return model, env
 
 
-def build_env(args):
+def build_env(args, env_kwargs=None):
     ncpu = multiprocessing.cpu_count()
     if sys.platform == 'darwin': ncpu //= 2
     nenv = args.num_env or ncpu
@@ -94,12 +94,12 @@ def build_env(args):
 
     if env_type in {'atari', 'retro'}:
         if alg == 'deepq':
-            env = make_env(env_id, env_type, seed=seed, wrapper_kwargs={'frame_stack': True})
+            env = make_env(env_id, env_type, seed=seed, wrapper_kwargs={'frame_stack': True}, env_kwargs=env_kwargs)
         elif alg == 'trpo_mpi':
-            env = make_env(env_id, env_type, seed=seed)
+            env = make_env(env_id, env_type, seed=seed, env_kwargs=env_kwargs)
         else:
             frame_stack_size = 4
-            env = make_vec_env(env_id, env_type, nenv, seed, gamestate=args.gamestate, reward_scale=args.reward_scale)
+            env = make_vec_env(env_id, env_type, nenv, seed, gamestate=args.gamestate, reward_scale=args.reward_scale, env_kwargs=env_kwargs)
             env = VecFrameStack(env, frame_stack_size)
 
     else:
@@ -110,7 +110,7 @@ def build_env(args):
         get_session(config=config)
 
         flatten_dict_observations = alg not in {'her'}
-        env = make_vec_env(env_id, env_type, args.num_env or 1, seed, reward_scale=args.reward_scale, flatten_dict_observations=flatten_dict_observations)
+        env = make_vec_env(env_id, env_type, args.num_env or 1, seed, reward_scale=args.reward_scale, flatten_dict_observations=flatten_dict_observations, env_kwargs=env_kwargs)
 
         if env_type == 'mujoco':
             env = VecNormalize(env, use_tf=True)
