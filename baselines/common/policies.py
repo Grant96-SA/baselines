@@ -74,7 +74,7 @@ class PolicyWithValue(object):
 
         return sess.run(variables, feed_dict)
 
-    def step(self, observation, **extra_feed):
+    def step(self, observation, apply_noise=True, **extra_feed):
         """
         Compute next action(s) given the observation(s)
 
@@ -90,7 +90,11 @@ class PolicyWithValue(object):
         (action, value estimate, next state, negative log likelihood of the action under current policy parameters) tuple
         """
 
-        a, v, state, neglogp = self._evaluate([self.action, self.vf, self.state, self.neglogp], observation, **extra_feed)
+        if apply_noise:
+            action = self.action
+        else:
+            action = self.pi
+        a, v, state, neglogp = self._evaluate([action, self.vf, self.state, self.neglogp], observation, **extra_feed)
         if state.size == 0:
             state = None
         return a, v, state, neglogp
