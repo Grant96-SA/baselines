@@ -93,7 +93,7 @@ class PolicyWithValue(object):
         if apply_noise:
             action = self.action
         else:
-            action = self.pi
+            action = self.pd.mode()
         a, v, state, neglogp = self._evaluate([action, self.vf, self.state, self.neglogp], observation, **extra_feed)
         if state.size == 0:
             state = None
