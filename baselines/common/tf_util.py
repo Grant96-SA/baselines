@@ -367,7 +367,7 @@ def load_variables(load_path, variables=None, sess=None):
             restores.append(v.assign(d))
     else:
         for v in variables:
-            if v in loaded_params:
+            if v.name in loaded_params:
                 restores.append(v.assign(loaded_params[v.name]))
 
     sess.run(restores)
