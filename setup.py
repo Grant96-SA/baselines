@@ -35,7 +35,7 @@ setup(name='baselines',
           'scipy',
           'tqdm',
           'joblib',
-          'cloudpickle',
+          'cloudpickle==1.2',
           'click',
           'opencv-python'
       ],
